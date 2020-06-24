@@ -1,6 +1,7 @@
 package tfl
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 )
@@ -10,7 +11,7 @@ type Client struct {
 	appID     string
 	appSecret string
 	baseURL   string
-	client    *http.Client
+	http      *http.Client
 }
 
 // NewClient ...
@@ -19,7 +20,7 @@ func NewClient(appID, appSecret, baseURL string) (*Client, error) {
 		appID:     appID,
 		appSecret: appSecret,
 		baseURL:   baseURL,
-		client:    &http.Client{Timeout: 300 * time.Second},
+		http:      &http.Client{Timeout: 300 * time.Second},
 	}, nil
 }
 
@@ -36,4 +37,12 @@ func (client *Client) GetAppSecret() string {
 // GetBaseURL ...
 func (client *Client) GetBaseURL() string {
 	return client.baseURL
+}
+
+func (client *Client) getAuthString() string {
+	return fmt.Sprintf("app_id=%s&app_key=%s", client.appID, client.appSecret)
+}
+
+func (client *Client) getRequestURL(endpoint string) string {
+	return fmt.Sprintf("%s/%s", client.baseURL, endpoint)
 }
